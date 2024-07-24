@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: spring-gha-service
+  namespace: phoonum-sl-dev
+spec:
+  selector:
+    app: spring-gha
+    deployment: spring-gha
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080

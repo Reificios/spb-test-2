@@ -1,0 +1,74 @@
+name: push-to-oc-prd
+
+env:
+  # 🖊️ EDIT your repository secrets to log into your OpenShift cluster and set up the context.
+  # See https://github.com/redhat-actions/oc-login#readme for how to retrieve these values.
+  # To get a permanent token, refer to https://github.com/redhat-actions/oc-login/wiki/Using-a-Service-Account-for-GitHub-Actions
+  OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
+  OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
+  # 🖊️ EDIT to set the kube context's namespace after login. Leave blank to use your user's default namespace.
+  OPENSHIFT_NAMESPACE: "phoonum-sl-dev"
+
+  # 🖊️ EDIT to set a name for your OpenShift app, or a default one will be generated below.
+  APP_NAME: "spring"
+
+  # 🖊️ EDIT with the port your application should be accessible on.
+  # If the container image exposes *exactly one* port, this can be left blank.
+  # Refer to the 'port' input of https://github.com/redhat-actions/oc-new-app
+  APP_PORT: "8080"
+
+  # 🖊️ EDIT to specify custom tags for the container image, or default tags will be generated below.
+  IMAGE_TAGS: "jib"
+  
+on: workflow_dispatch
+jobs:
+  deploy-to-oc:
+    runs-on: ubuntu-latest
+    steps:
+     - name: Checkout code
+       uses: actions/checkout@v4
+
+     - name: Install oc
+       uses: redhat-actions/openshift-tools-installer@v1
+       with:
+         oc: 4
+
+     - name: Log in to OpenShift
+       uses: redhat-actions/oc-login@v1
+       with:
+         openshift_server_url: ${{ env.OPENSHIFT_SERVER }}
+         openshift_token: ${{ env.OPENSHIFT_TOKEN }}
+         insecure_skip_tls_verify: true
+         namespace: ${{ env.OPENSHIFT_NAMESPACE }}
+
+     - name: Check if configmap already exist
+       run: |
+         if oc get configmap prd; then
+          oc delete configmap prd
+         fi
+
+     - name: Check if deployment already exist
+       run: |
+         if oc get deployment spring-gha-deployment; then
+           oc delete deployment spring-gha-deployment
+         fi
+
+     - name: Check if service already exist
+       run: |
+         if oc get service spring-gha-service; then
+           oc delete service spring-gha-service
+         fi
+
+     - name: Check if route already exist
+       run: |
+         if oc get route spring-gha-route; then
+           oc delete route spring-gha-route
+         fi
+
+
+     - name: Create app
+       run: |
+         oc create -f ./.github/config/prd.yaml
+         oc create -f ./.github/deploy/deployment-prd.yaml
+         oc create -f ./.github/deploy/service.yaml
+         oc create -f ./.github/deploy/route.yaml

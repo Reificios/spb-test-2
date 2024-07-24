@@ -1,0 +1,70 @@
+name: create-app-oc
+
+env:
+  # 🖊️ EDIT your repository secrets to log into your OpenShift cluster and set up the context.
+  # See https://github.com/redhat-actions/oc-login#readme for how to retrieve these values.
+  # To get a permanent token, refer to https://github.com/redhat-actions/oc-login/wiki/Using-a-Service-Account-for-GitHub-Actions
+  OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
+  OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
+  # 🖊️ EDIT to set the kube context's namespace after login. Leave blank to use your user's default namespace.
+  OPENSHIFT_NAMESPACE: "phoonum-sl-dev"
+
+  # 🖊️ EDIT to set a name for your OpenShift app, or a default one will be generated below.
+  APP_NAME: "spring"
+
+  # 🖊️ EDIT with the port your application should be accessible on.
+  # If the container image exposes *exactly one* port, this can be left blank.
+  # Refer to the 'port' input of https://github.com/redhat-actions/oc-new-app
+  APP_PORT: "8080"
+
+  # 🖊️ EDIT to change the image registry settings.
+  # Registries such as GHCR, Quay.io, and Docker Hub are supported.
+  IMAGE_REGISTRY: phoonumsl/spring-test
+  IMAGE_REGISTRY_USER: ${{ secrets.DOCKER_USERNAME }}
+  IMAGE_REGISTRY_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+  # 🖊️ EDIT to specify custom tags for the container image, or default tags will be generated below.
+  IMAGE_TAGS: "jib"
+  
+on: workflow_dispatch
+jobs:
+  build:
+   runs-on: ubuntu-latest
+   steps:
+     - name: Checkout code
+       uses: actions/checkout@v4
+
+     - name: Setup Java
+       uses: actions/setup-java@v4
+       with:
+         java-version: '21'
+         distribution: 'temurin'
+
+     - name: Run test
+       run: mvn clean package
+
+     - name: Log in to Docker Hub
+       uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+       with:
+         username: ${{ secrets.DOCKER_USERNAME }}
+         password: ${{ secrets.DOCKER_PASSWORD }}
+
+     - name: JIB
+       run: mvn compile jib:build
+
+
+     - name: Install oc
+       uses: redhat-actions/openshift-tools-installer@v1
+       with:
+         oc: 4
+
+     - name: Log in to OpenShift
+       uses: redhat-actions/oc-login@v1
+       with:
+         openshift_server_url: ${{ env.OPENSHIFT_SERVER }}
+         openshift_token: ${{ env.OPENSHIFT_TOKEN }}
+         insecure_skip_tls_verify: true
+         namespace: ${{ env.OPENSHIFT_NAMESPACE }}
+
+     - name: Create app
+       run: oc new-app phoonumsl/spring-test:jib --name=spring-gha

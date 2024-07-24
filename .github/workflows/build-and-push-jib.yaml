@@ -1,0 +1,26 @@
+name: build-and-push-jib
+on: workflow_dispatch
+jobs:
+  build-and-push-jib:
+   runs-on: ubuntu-latest
+   steps:
+     - name: Checkout code
+       uses: actions/checkout@v4
+
+     - name: Setup Java
+       uses: actions/setup-java@v4
+       with:
+         java-version: '21'
+         distribution: 'temurin'
+
+     - name: Run test
+       run: mvn clean package
+
+     - name: Log in to Docker Hub
+       uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+       with:
+         username: ${{ secrets.DOCKER_USERNAME }}
+         password: ${{ secrets.DOCKER_PASSWORD }}
+
+     - name: JIB
+       run: mvn compile jib:build

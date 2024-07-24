@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: phoonum-sl-dev
+  name: spring-gha-deployment
+  labels:
+    app: spring-gha
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spring-gha
+  template:
+    metadata:
+      labels: 
+        app: spring-gha
+        deployment: spring-gha
+    spec:
+      containers:
+      - name: spring-gha
+        image: phoonumsl/spring-test:latest
+        ports:
+          - containerPort: 8080
+            protocol: TCP
+strategy:
+  type: Rolling
+  rollingParams:
+    timeoutSeconds: 600
+    updatePeriodSeconds: 1
+    intervalSeconds: 1
+    maxSurge: 25%
+    maxUnavailable: 25%
+  triggers:
+    - type: ConfigChange
+paused: false
