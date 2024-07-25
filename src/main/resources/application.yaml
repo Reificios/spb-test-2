@@ -1,17 +1,19 @@
 spring:
   application:
-    name: spring-gha
+    name: springgha
   profiles:
     active: dev
   config:
-    import:
-#    import: optional:configserver:http://spring-config-service:8888
+#    import:
+    import: optional:configserver:http://localhost:8888
 
 server:
   port : 8080
 
-# alt-service: none
-
+alt-service: a
+config-message: a
+kube-message: a
+ 
 logging:
   pattern:
     correlation: "[${spring.application.name:},%X{traceId:-},%X{spanId:-}] "

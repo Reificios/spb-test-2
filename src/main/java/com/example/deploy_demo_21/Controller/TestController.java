@@ -62,16 +62,10 @@ public class TestController {
 	
 	@GetMapping("/hello-config")
 	public String HelloConfig() {
-		logger.info("API call: Hello World Message with " + message);
+		logger.info("API call: Hello World Message with " + configMessage);
 		return "Hello " + configMessage;
 	}
-	
-	@GetMapping("/hello-kube")
-	public String HelloKube() {
-		logger.info("API call: Hello World Message with " + message);
-		return "Hello " + kubeMessage;
-	}
-	
+
 	@GetMapping("/hello-other")
 	@NewSpan(value = "test-span")
 	public String HelloOtherService() {
