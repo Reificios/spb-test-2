@@ -69,24 +69,27 @@ jobs:
          insecure_skip_tls_verify: true
          namespace: ${{ env.OPENSHIFT_NAMESPACE }}
 
-     - name: Create and expose app
-       id: deploy-and-expose
-       uses: redhat-actions/oc-new-app@v1
-       with:
-         app_name: ${{ env.APP_NAME }}
-         image: phoonumsl/spring-test:test
-         namespace: ${{ env.OPENSHIFT_NAMESPACE }}
-         port: ${{ env.APP_PORT }}
-
-     - name: Print application URL
-       env:
-         ROUTE: ${{ steps.deploy-and-expose.outputs.route }}
-         SELECTOR: ${{ steps.deploy-and-expose.outputs.selector }}
+     - name: Check if deployment already exist
        run: |
-         [[ -n ${{ env.ROUTE }} ]] || (echo "Determining application route failed in previous step"; exit 1)
-         echo
-         echo "======================== Your application is available at: ========================"
-         echo ${{ env.ROUTE }}
-         echo "==================================================================================="
-         echo
-         echo "Your app can be taken down with: \"oc delete all --selector='${{ env.SELECTOR }}'\""
+         if oc get deployment spring-gha-deployment; then
+           oc delete deployment spring-gha-deployment
+         fi
+
+     - name: Check if service already exist
+       run: |
+         if oc get service spring-gha-service; then
+           oc delete service spring-gha-service
+         fi
+
+     - name: Check if route already exist
+       run: |
+         if oc get route spring-gha-route; then
+           oc delete route spring-gha-route
+         fi
+
+     - name: Create app
+       run: |
+         oc create -f ./.github/config/prd.yaml
+         oc create -f ./.github/deploy/deployment-prd.yaml
+         oc create -f ./.github/deploy/service.yaml
+         oc create -f ./.github/deploy/route.yaml
