@@ -2,19 +2,20 @@ spring:
   application:
     name: spring-gha
   profiles:
-    active: dev
+    active: kubenetes,test,dev
+  config:
+    import: optional:configserver:http://spring-config-service:8888
 
 server:
   port : 8080
 
-hello-message: t
 alt-service: none
 
 logging:
   pattern:
     correlation: "[${spring.application.name:},%X{traceId:-},%X{spanId:-}] "
   include-application-name: false
-
+  
 management:
   tracing:
     sampling:
@@ -22,3 +23,7 @@ management:
   zipkin:
     tracing:
       endpoint: http://zipkin.istio-system.svc.cluster.local:9411/api/v2/spans
+  endpoints:
+    web:
+      exposure:
+        include: '*'

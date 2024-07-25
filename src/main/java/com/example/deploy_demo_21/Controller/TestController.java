@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -13,6 +14,7 @@ import com.example.deploy_demo_21.Model.DTO.HelloWorldResponse;
 import io.micrometer.tracing.annotation.NewSpan;
 
 @RestController
+@RefreshScope
 public class TestController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(TestController.class);
@@ -25,9 +27,14 @@ public class TestController {
 	@Value("${hello-message}")
 	String message;
 	
+	@Value("${config-message}")
+	String configMessage;
+	
+	@Value("${kube-message}")
+	String kubeMessage;
+	
 	@Value("${alt-service}")
 	String link;
-	
 	
 	@GetMapping("/hello-world")
 	public String HelloWorld() {
@@ -51,6 +58,18 @@ public class TestController {
 	public String HelloMSG() {
 		logger.info("API call: Hello World Message with " + message);
 		return "Hello " + message;
+	}
+	
+	@GetMapping("/hello-config")
+	public String HelloConfig() {
+		logger.info("API call: Hello World Message with " + message);
+		return "Hello " + configMessage;
+	}
+	
+	@GetMapping("/hello-kube")
+	public String HelloKube() {
+		logger.info("API call: Hello World Message with " + message);
+		return "Hello " + kubeMessage;
 	}
 	
 	@GetMapping("/hello-other")

@@ -18,7 +18,7 @@ env:
   APP_PORT: "8080"
 
   # 🖊️ EDIT to specify custom tags for the container image, or default tags will be generated below.
-  IMAGE_TAGS: "jib"
+  IMAGE_TAGS: "latest"
   
 on: workflow_dispatch
 jobs:
@@ -69,6 +69,5 @@ jobs:
      - name: Create app
        run: |
          oc create -f ./.github/config/dev.yaml
-         oc create -f ./.github/deploy/deployment-dev.yaml
          oc create -f ./.github/deploy/service.yaml
          oc create -f ./.github/deploy/route.yaml

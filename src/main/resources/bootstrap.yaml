@@ -1,0 +1,6 @@
+spring:
+  cloud:
+    config:
+      uri: http://myconfigserver.com
+  application:
+    name: myapp

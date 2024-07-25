@@ -1,4 +1,4 @@
-name: build-and-push-oc
+name: /[Final/] Build and push to OC
 
 env:
   # 🖊️ EDIT your repository secrets to log into your OpenShift cluster and set up the context.
@@ -24,11 +24,11 @@ env:
   IMAGE_REGISTRY_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
   # 🖊️ EDIT to specify custom tags for the container image, or default tags will be generated below.
-  IMAGE_TAGS: "jib"
+  IMAGE_TAGS: "latest"
   
 on: workflow_dispatch
 jobs:
-  build-and-push-oc:
+  build:
    runs-on: ubuntu-latest
    steps:
      - name: Checkout code
@@ -52,6 +52,10 @@ jobs:
      - name: JIB
        run: mvn compile jib:build
 
+  push-to-oc:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
      - name: Install oc
        uses: redhat-actions/openshift-tools-installer@v1
        with:
@@ -70,7 +74,7 @@ jobs:
        uses: redhat-actions/oc-new-app@v1
        with:
          app_name: ${{ env.APP_NAME }}
-         image: phoonumsl/spring-test:jib
+         image: phoonumsl/spring-test:test
          namespace: ${{ env.OPENSHIFT_NAMESPACE }}
          port: ${{ env.APP_PORT }}
 
