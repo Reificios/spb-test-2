@@ -53,8 +53,12 @@ jobs:
     needs: [build]
     runs-on: ubuntu-latest
     steps:
+
      - name: Checkout code
        uses: actions/checkout@v4
+       with:
+         sparse-checkout: |
+           .github
 
      - name: Install oc
        uses: redhat-actions/openshift-tools-installer@v1
