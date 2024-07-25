@@ -22,6 +22,11 @@ spec:
         ports:
           - containerPort: 8080
             protocol: TCP
+        env:
+          - name: ALT_SERVICE
+            value: http://spring-alt-service:8080/hello-alt
+          - name: SPRING_CONFIG_IMPORT
+            value: optional:configserver:http://spring-config-service:8888
 strategy:
   type: Rolling
   rollingParams:

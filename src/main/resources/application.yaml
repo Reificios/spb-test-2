@@ -2,14 +2,15 @@ spring:
   application:
     name: spring-gha
   profiles:
-    active: kubenetes,test,dev
+    active: dev
   config:
-    import: optional:configserver:http://spring-config-service:8888
+    import:
+#    import: optional:configserver:http://spring-config-service:8888
 
 server:
   port : 8080
 
-alt-service: none
+# alt-service: none
 
 logging:
   pattern:

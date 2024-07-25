@@ -41,12 +41,6 @@ jobs:
          insecure_skip_tls_verify: true
          namespace: ${{ env.OPENSHIFT_NAMESPACE }}
 
-     - name: Check if configmap already exist
-       run: |
-         if oc get configmap dev; then
-           oc delete configmap dev
-         fi
-
      - name: Check if deployment already exist
        run: |
          if oc get deployment spring-gha-deployment; then
@@ -64,7 +58,6 @@ jobs:
          if oc get route spring-gha-route; then
            oc delete route spring-gha-route
          fi
-
 
      - name: Create app
        run: |
