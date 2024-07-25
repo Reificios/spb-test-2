@@ -1,4 +1,4 @@
-name: /[Final/] Build and push to OC
+name: FINAL - Build and push to OC
 
 env:
   # 🖊️ EDIT your repository secrets to log into your OpenShift cluster and set up the context.
