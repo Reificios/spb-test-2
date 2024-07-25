@@ -93,6 +93,6 @@ jobs:
 
      - name: Create app
        run: |
-         oc create -f ./.github/config/deployment.yaml
+         oc create -f ./.github/deploy/deployment.yaml
          oc create -f ./.github/deploy/service.yaml
          oc create -f ./.github/deploy/route.yaml
