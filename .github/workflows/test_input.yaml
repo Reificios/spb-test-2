@@ -16,3 +16,5 @@ jobs:
     steps:
       - name: outing
         run: echo "${{ inputs.deployEnv }}"
+      - name: secret lmao
+        run: echo "${{ secrets.SPRING_PROFILES_ACTIVE }}"
