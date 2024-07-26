@@ -60,6 +60,7 @@ jobs:
   push-to-oc:
     needs: [build]
     runs-on: ubuntu-latest
+    environment: ${{ inputs.deployEnv }}
     steps:
 
      - name: Checkout code
