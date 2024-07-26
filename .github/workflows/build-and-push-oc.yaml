@@ -90,6 +90,9 @@ jobs:
          if oc get route spring-gha-route; then
            oc delete route spring-gha-route
          fi
+         if oc get route zipkin-route; then
+           oc delete route zipkin-route
+         fi
 
      - name: Create app
        run: |
