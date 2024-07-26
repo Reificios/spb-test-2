@@ -22,8 +22,6 @@ spec:
         ports:
           - containerPort: 8080
             protocol: TCP
-          - containerPort: 9411
-            protocol: TCP
         env:
           - name: SPRING_PROFILES_ACTIVE
             value: dev
@@ -31,6 +29,9 @@ spec:
             value: http://spring-alt-service:8080/hello-alt
           - name: SPRING_CONFIG_IMPORT
             value: optional:configserver:http://spring-cloud-kubernetes-configserver:8888
+          - name: MANAGEMENT_ZIPKIN_TRACING
+            value: https://zipkin-phoonum-sl-dev.apps.sandbox-m3.1530.p1.openshiftapps.com/api/v2/spans
+
 strategy:
   type: Rolling
   rollingParams:
