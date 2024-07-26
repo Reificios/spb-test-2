@@ -2,9 +2,10 @@ spring:
   application:
     name: springgha
   profiles:
-    active: dev
+    active: dev,kubernetes
   config:
-    import: optional:configserver:http://spring-cloud-kubernetes-configserver:8888
+#    import: optional:configserver:http://spring-config-route-phoonum-sl-dev.apps.sandbox-m3.1530.p1.openshiftapps.com
+    import: optional:configserver:http://spring-cloud-config-phoonum-sl-dev.apps.sandbox-m3.1530.p1.openshiftapps.com/
 #    import: optional:configserver:http://spring-config-service:8888
 #    import: optional:configserver:http://localhost:8888
 
@@ -24,9 +25,9 @@ management:
   tracing:
     sampling:
       probability: 1.0
-  zipkin:
-    tracing:
-      endpoint: http://zipkin.istio-system.svc.cluster.local:9411/api/v2/spans
+#  zipkin:
+#    tracing:
+#      endpoint: http://zipkin.istio-system.svc.cluster.local:9411/api/v2/spans
   endpoints:
     web:
       exposure:

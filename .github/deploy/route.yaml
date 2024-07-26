@@ -11,3 +11,17 @@ spec:
   port:
     targetPort: 8080
   alternateBackends: []
+---
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: zipkin-route
+  namespace: phoonum-sl-dev
+spec:
+  to:
+    kind: Service
+    name: spring-gha-service
+  tls: null
+  port:
+    targetPort: 9411
+  alternateBackends: []
