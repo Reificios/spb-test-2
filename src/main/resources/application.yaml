@@ -4,8 +4,9 @@ spring:
   profiles:
     active: dev
   config:
-#    import:
-    import: optional:configserver:http://localhost:8888
+    import: optional:configserver:http://spring-cloud-kubernetes-configserver:8888
+#    import: optional:configserver:http://spring-config-service:8888
+#    import: optional:configserver:http://localhost:8888
 
 server:
   port : 8080
