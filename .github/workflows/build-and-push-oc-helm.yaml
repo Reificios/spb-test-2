@@ -1,4 +1,4 @@
-name: create-app-oc-v2
+name: FINAL - Build and push to OC
 
 env:
   # 🖊️ EDIT your repository secrets to log into your OpenShift cluster and set up the context.
@@ -17,21 +17,26 @@ env:
   # Refer to the 'port' input of https://github.com/redhat-actions/oc-new-app
   APP_PORT: "8080"
 
+  # 🖊️ EDIT to change the image registry settings.
+  # Registries such as GHCR, Quay.io, and Docker Hub are supported.
+  IMAGE_REGISTRY: phoonumsl/spring-test
+  IMAGE_REGISTRY_USER: ${{ secrets.DOCKER_USERNAME }}
+  IMAGE_REGISTRY_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
   # 🖊️ EDIT to specify custom tags for the container image, or default tags will be generated below.
-  IMAGE_TAGS: "jib"
+  IMAGE_TAGS: "latest"
   
 on: 
   workflow_dispatch:
     inputs:
-      deployEnv:
+      name:
         type: choice
-        description: Env
-        required: true
+        description: Environment
         options: 
-          - dev
-          - prd
+        - dev
+        - prd
 jobs:
-  build-and-push-image:
+  build:
    runs-on: ubuntu-latest
    steps:
      - name: Checkout code
@@ -43,9 +48,6 @@ jobs:
          java-version: '21'
          distribution: 'temurin'
 
-     - name: Run test
-       run: mvn clean package
-
      - name: Log in to Docker Hub
        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
        with:
@@ -55,18 +57,16 @@ jobs:
      - name: JIB
        run: mvn compile jib:build
 
-  deploy-to-oc:
+  push-to-oc:
+    needs: [build]
     runs-on: ubuntu-latest
-    needs: [build-and-push-image]
-    environment: ${{ inputs.deployEnv }}
     steps:
+
      - name: Checkout code
        uses: actions/checkout@v4
-
-     - name: setup helm
-       uses: azure/setup-helm@v4.2.0
        with:
-         version: v3.14.4
+         sparse-checkout: |
+           .github
 
      - name: Install oc
        uses: redhat-actions/openshift-tools-installer@v1
@@ -98,17 +98,12 @@ jobs:
          if oc get route spring-gha-route; then
            oc delete route spring-gha-route
          fi
-
-     - name: Set secrets
-       run: |
-         helm template ./.github/deploy/deployment --output-dir './.github/final' \
-         --set SPRING_PROFILES_ACTIVE=${{ secrets.SPRING_PROFILES_ACTIVE }}\
-         --set ALT_SERVICE=${{ secrets.ALT_SERVICE }}\
-         --set SPRING_CONFIG_IMPORT=${{ secrets.SPRING_CONFIG_IMPORT }}\
-         --set MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=${{ secrets.MANAGEMENT_ZIPKIN_TRACING_ENDPOINT }}
+         if oc get route zipkin-route; then
+           oc delete route zipkin-route
+         fi
 
      - name: Create app
        run: |
-         oc create -f ./.github/final/deployment/templates/deployment.yaml
-         oc create -f ./.github/final/deployment/templates/service.yaml
-         oc create -f ./.github/final/deployment/templates/route.yaml
+         oc create -f ./.github/deploy/deployment.yaml
+         oc create -f ./.github/deploy/service.yaml
+         oc create -f ./.github/deploy/route.yaml

@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: phoonum-sl-dev
+  name: spring-gha-deployment
+  labels:
+    app: spring-gha
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spring-gha
+  template:
+    metadata:
+      labels: 
+        app: spring-gha
+        deployment: spring-gha
+    spec:
+      containers:
+      - name: spring-gha
+        image: phoonumsl/spring-test:latest
+        ports:
+          - containerPort: 8080
+            protocol: TCP
+        env:
+          - name: SPRING_PROFILES_ACTIVE
+            value: dev
+          - name: ALT_SERVICE
+            value: http://spring-alt-service:8080/hello-alt
+          - name: SPRING_CONFIG_IMPORT
+            value: optional:configserver:http://spring-cloud-kubernetes-configserver:8888
+          - name: MANAGEMENT_ZIPKIN_TRACING_ENDPOINT
+            value: https://zipkin-phoonum-sl-dev.apps.sandbox-m3.1530.p1.openshiftapps.com/api/v2/spans
+
+strategy:
+  type: Rolling
+  rollingParams:
+    timeoutSeconds: 600
+    updatePeriodSeconds: 1
+    intervalSeconds: 1
+    maxSurge: 25%
+    maxUnavailable: 25%
+  triggers:
+    - type: ConfigChange
+paused: false

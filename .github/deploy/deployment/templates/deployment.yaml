@@ -24,13 +24,13 @@ spec:
             protocol: TCP
         env:
           - name: SPRING_PROFILES_ACTIVE
-            value: dev
+            value: {{ .Values.SPRING_PROFILES_ACTIVE }}
           - name: ALT_SERVICE
-            value: http://spring-alt-service:8080/hello-alt
+            value: {{ .Values.ALT_SERVICE }}
           - name: SPRING_CONFIG_IMPORT
-            value: optional:configserver:http://spring-cloud-kubernetes-configserver:8888
-          - name: MANAGEMENT_ZIPKIN_TRACING
-            value: https://zipkin-phoonum-sl-dev.apps.sandbox-m3.1530.p1.openshiftapps.com/api/v2/spans
+            value: {{ .Values.SPRING_CONFIG_IMPORT }}
+          - name: MANAGEMENT_ZIPKIN_TRACING_ENDPOINT
+            value: {{ .Values.MANAGEMENT_ZIPKIN_TRACING_ENDPOINT }}
 
 strategy:
   type: Rolling

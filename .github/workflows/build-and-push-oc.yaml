@@ -26,15 +26,7 @@ env:
   # 🖊️ EDIT to specify custom tags for the container image, or default tags will be generated below.
   IMAGE_TAGS: "latest"
   
-on: 
-  workflow_dispatch:
-    inputs:
-      name:
-        type: choice
-        description: Environment
-        options: 
-        - dev
-        - prd
+on: workflow_dispatch
 jobs:
   build:
    runs-on: ubuntu-latest
