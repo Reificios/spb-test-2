@@ -1,0 +1,18 @@
+name: test env
+on: 
+  workflow_dispatch:
+    inputs:
+      deployEnv:
+        type: choice
+        description: Env
+        required: true
+        options: 
+          - dev
+          - prd
+jobs:
+  outing:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.deployEnv }}
+    steps:
+      - name: outing
+        run: echo "${{ inputs.deployEnv }}"
