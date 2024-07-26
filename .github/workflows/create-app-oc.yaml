@@ -66,5 +66,4 @@ jobs:
          insecure_skip_tls_verify: true
          namespace: ${{ env.OPENSHIFT_NAMESPACE }}
 
-     - name: Create app
-       run: oc new-app phoonumsl/spring-test:jib --name=spring-gha
+

@@ -68,6 +68,11 @@ jobs:
          sparse-checkout: |
            .github
 
+     - name: setup helm
+       uses: azure/setup-helm@v4.2.0
+       with:
+         version: v3.14.4
+
      - name: Install oc
        uses: redhat-actions/openshift-tools-installer@v1
        with:
@@ -102,8 +107,16 @@ jobs:
            oc delete route zipkin-route
          fi
 
+     - name: Set secrets
+       run: |
+         helm template ./.github/deploy/deployment --output-dir './.github/final' \
+         --set SPRING_PROFILES_ACTIVE=${{ secrets.SPRING_PROFILES_ACTIVE }}\
+         --set ALT_SERVICE=${{ secrets.ALT_SERVICE }}\
+         --set SPRING_CONFIG_IMPORT=${{ secrets.SPRING_CONFIG_IMPORT }}\
+         --set MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=${{ secrets.MANAGEMENT_ZIPKIN_TRACING_ENDPOINT }}
+
      - name: Create app
        run: |
-         oc create -f ./.github/deploy/deployment.yaml
-         oc create -f ./.github/deploy/service.yaml
-         oc create -f ./.github/deploy/route.yaml
+         oc create -f ./.github/final/deployment/templates/deployment.yaml
+         oc create -f ./.github/final/deployment/templates/service.yaml
+         oc create -f ./.github/final/deployment/templates/route.yaml
