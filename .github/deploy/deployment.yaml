@@ -25,6 +25,8 @@ spec:
           - containerPort: 9411
             protocol: TCP
         env:
+          - name: SPRING_PROFILES_ACTIVE
+            value: dev
           - name: ALT_SERVICE
             value: http://spring-alt-service:8080/hello-alt
           - name: SPRING_CONFIG_IMPORT

@@ -2,7 +2,7 @@ spring:
   application:
     name: springgha
   profiles:
-    active: dev,kubernetes
+    active: default
   config:
 #    import: optional:configserver:http://spring-config-route-phoonum-sl-dev.apps.sandbox-m3.1530.p1.openshiftapps.com
     import: optional:configserver:http://spring-cloud-config-phoonum-sl-dev.apps.sandbox-m3.1530.p1.openshiftapps.com/
