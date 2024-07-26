@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: spring-gha-service
   namespace: phoonum-sl-dev
-spec:
+spec: 
   selector:
     app: spring-gha
     deployment: spring-gha
@@ -11,6 +11,8 @@ spec:
     - protocol: TCP
       port: 8080
       targetPort: 8080
+      name: main
     - protocol: TCP
       port: 9411
       targetPort: 9411
+      name: zipkin
